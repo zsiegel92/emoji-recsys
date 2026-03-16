@@ -4,7 +4,7 @@
 
 [Live demo at `emoji-recsys.vercel.app`](https://emoji-recsys.vercel.app/).
 
-<video src="assets/demo.mp4" width="300" autoplay loop muted></video>
+<video src="https://github.com/user-attachments/assets/b2df0342-26b1-4e4d-9ef8-8581b1a0277a" width="300" autoplay loop muted></video>
 
 Semantic emoji search for React. Type a word or phrase, get the most relevant emojis back.
 
