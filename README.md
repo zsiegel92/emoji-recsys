@@ -2,7 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/emoji-recsys)](https://www.npmjs.com/package/emoji-recsys)
 
-[Demo at `emoji-recsys.vercel.app`](https://emoji-recsys.vercel.app/).
+[Live demo at `emoji-recsys.vercel.app`](https://emoji-recsys.vercel.app/).
+
+<video src="assets/demo.mp4" width="300" autoplay loop muted></video>
 
 Semantic emoji search for React. Type a word or phrase, get the most relevant emojis back.
 
