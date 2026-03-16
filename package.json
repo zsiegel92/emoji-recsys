@@ -17,7 +17,8 @@
     "build:vectors": "tsx scripts/build-vectors.ts",
     "build": "pnpm build:vectors && tsup",
     "prepublishOnly": "pnpm build",
-    "pub": "pnpm publish --access public"
+    "pub": "pnpm publish --access public",
+    "tsgo-check": "tsgo --noEmit"
   },
   "peerDependencies": {
     "react": ">=18.0.0"
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
+    "@typescript/native-preview": "7.0.0-dev.20260315.1",
     "react": "^19.0.0",
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",

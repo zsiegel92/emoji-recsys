@@ -53,6 +53,7 @@ interface EmojiEntry {
 
 async function main() {
   console.log("Loading model...");
+  // @ts-ignore — no types for this package
   const pipe = (await pipeline("feature-extraction", MODEL, {
     dtype: "fp32",
   })) as FeatureExtractionPipeline;
