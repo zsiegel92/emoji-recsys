@@ -1,5 +1,7 @@
 # emoji-recsys
 
+[Demo at `emoji-recsys.vercel.app`](https://emoji-recsys.vercel.app/).
+
 Semantic emoji search for React. Type a word or phrase, get the most relevant emojis back.
 
 Uses precomputed embeddings for 1,906 emojis and [all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2) via [Transformers.js](https://huggingface.co/docs/transformers.js) for query embedding. Runs entirely in the browser.
@@ -20,7 +22,9 @@ React 18+ is a peer dependency.
 import { useEmojiRecommendations } from "emoji-recsys";
 
 function EmojiPicker() {
-  const results = useEmojiRecommendations("happy celebration", 5);
+  const { results, error } = useEmojiRecommendations("happy celebration", 5);
+
+  if (error) return <div>Failed to load: {error.message}</div>;
 
   return (
     <div>
@@ -36,20 +40,22 @@ function EmojiPicker() {
 
 ### Hooks
 
-#### `useEmojiRecommendations(query: string, n?: number): EmojiResult[]`
+All hooks return `{ results, error }` (or `{ result, error }` for the singular variant). `error` is `null` on success, or an `Error` if the model fails to load.
+
+#### `useEmojiRecommendations(query: string, n?: number): { results: EmojiResult[]; error: Error | null }`
 
 Returns the top `n` emojis (default 5) most semantically similar to `query`. Returns `[]` while loading or if query is empty.
 
-#### `useEmojiRecommendation(query: string): EmojiResult | null`
+#### `useEmojiRecommendation(query: string): { result: EmojiResult | null; error: Error | null }`
 
 Returns the single best emoji match.
 
-#### `useCustomSubsetEmojiRecommendations(query: string, n: number, vocabulary: string[]): EmojiResult[]`
+#### `useCustomSubsetEmojiRecommendations(query: string, n: number, vocabulary: string[]): { results: EmojiResult[]; error: Error | null }`
 
 Same as `useEmojiRecommendations`, but only searches within the provided emoji subset.
 
 ```tsx
-const results = useCustomSubsetEmojiRecommendations("weather", 3, ["☀️", "🌧️", "❄️", "🌈", "⛈️"]);
+const { results } = useCustomSubsetEmojiRecommendations("weather", 3, ["☀️", "🌧️", "❄️", "🌈", "⛈️"]);
 ```
 
 ### Utilities
@@ -64,7 +70,7 @@ import { preloadModel } from "emoji-recsys";
 useEffect(() => { preloadModel(); }, []);
 ```
 
-#### `getAllEmojis(): string[]`
+#### `getAllEmojis(): Promise<string[]>`
 
 Returns all 1,906 emoji characters that have precomputed vectors.
 
@@ -77,6 +83,10 @@ interface EmojiResult {
   score: number;  // cosine similarity (0–1, higher = better match)
 }
 ```
+
+## Example app
+
+See [test-emoji-recsys](https://github.com/zsiegel92/test-emoji-recsys) for a working Next.js example.
 
 ## How it works
 

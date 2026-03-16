@@ -10,38 +10,50 @@ import type { EmojiResult } from "./types";
 export function useEmojiRecommendations(
   query: string,
   n: number = 5,
-): EmojiResult[] {
+): { results: EmojiResult[]; error: Error | null } {
   const [results, setResults] = useState<EmojiResult[]>([]);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!query.trim()) {
       setResults([]);
+      setError(null);
       return;
     }
 
     let cancelled = false;
 
-    embedQuery(query).then((queryVec) => {
-      if (!cancelled) {
-        setResults(rankEmojis(queryVec, n));
-      }
-    });
+    embedQuery(query)
+      .then((queryVec) => rankEmojis(queryVec, n))
+      .then((ranked) => {
+        if (!cancelled) {
+          setResults(ranked);
+          setError(null);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+        }
+      });
 
     return () => {
       cancelled = true;
     };
   }, [query, n]);
 
-  return results;
+  return { results, error };
 }
 
 /**
  * Returns the single best emoji match for `query`.
  */
-export function useEmojiRecommendation(query: string): EmojiResult | null {
-  const results = useEmojiRecommendations(query, 1);
-  return results[0] ?? null;
+export function useEmojiRecommendation(
+  query: string,
+): { result: EmojiResult | null; error: Error | null } {
+  const { results, error } = useEmojiRecommendations(query, 1);
+  return { result: results[0] ?? null, error };
 }
 
 /**
@@ -51,28 +63,38 @@ export function useCustomSubsetEmojiRecommendations(
   query: string,
   n: number,
   vocabulary: string[],
-): EmojiResult[] {
+): { results: EmojiResult[]; error: Error | null } {
   const [results, setResults] = useState<EmojiResult[]>([]);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!query.trim()) {
       setResults([]);
+      setError(null);
       return;
     }
 
     let cancelled = false;
 
-    embedQuery(query).then((queryVec) => {
-      if (!cancelled) {
-        setResults(rankEmojis(queryVec, n, vocabulary));
-      }
-    });
+    embedQuery(query)
+      .then((queryVec) => rankEmojis(queryVec, n, vocabulary))
+      .then((ranked) => {
+        if (!cancelled) {
+          setResults(ranked);
+          setError(null);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+        }
+      });
 
     return () => {
       cancelled = true;
     };
   }, [query, n, vocabulary]);
 
-  return results;
+  return { results, error };
 }

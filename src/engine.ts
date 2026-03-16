@@ -10,9 +10,17 @@ interface VectorData {
   emojis: Record<string, { name: string; vector: number[] }>;
 }
 
-// Use import with type assertion to avoid TS inferring a massive union from JSON keys
-import _emojiVectors from "./data/emoji-vectors.json";
-const emojiVectors = _emojiVectors as unknown as VectorData;
+// Lazy-load vectors so mobile browsers don't parse 6MB upfront
+let vectorsPromise: Promise<VectorData> | null = null;
+
+function getVectors(): Promise<VectorData> {
+  if (!vectorsPromise) {
+    vectorsPromise = import("./data/emoji-vectors.json").then(
+      (m) => m.default as unknown as VectorData,
+    );
+  }
+  return vectorsPromise;
+}
 
 const MODEL = "Xenova/all-MiniLM-L6-v2";
 
@@ -49,20 +57,21 @@ function cosineSimilarity(a: Float32Array | number[], b: number[]): number {
   return dot / (Math.sqrt(magA) * Math.sqrt(magB));
 }
 
-const allEmojis = Object.entries(emojiVectors.emojis) as [
-  string,
-  { name: string; vector: number[] },
-][];
-
 /**
  * Rank emojis by cosine similarity to the query vector.
  * If `subset` is provided, only those emojis are considered.
  */
-export function rankEmojis(
+export async function rankEmojis(
   queryVec: Float32Array,
   n: number,
   subset?: string[],
-): EmojiResult[] {
+): Promise<EmojiResult[]> {
+  const emojiVectors = await getVectors();
+  const allEmojis = Object.entries(emojiVectors.emojis) as [
+    string,
+    { name: string; vector: number[] },
+  ][];
+
   const candidates = subset
     ? subset
         .map((e) => {
@@ -85,6 +94,7 @@ export function rankEmojis(
 }
 
 /** Get the list of all emoji characters with precomputed vectors. */
-export function getAllEmojis(): string[] {
-  return allEmojis.map(([emoji]) => emoji);
+export async function getAllEmojis(): Promise<string[]> {
+  const emojiVectors = await getVectors();
+  return Object.keys(emojiVectors.emojis);
 }
