@@ -1,6 +1,6 @@
 {
   "name": "emoji-recsys",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "exports": {
     ".": {
@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build:vectors": "tsx scripts/build-vectors.ts",
-    "build": "tsup",
+    "build": "pnpm build:vectors && tsup",
     "prepublishOnly": "pnpm build",
     "pub": "pnpm publish --access public"
   },

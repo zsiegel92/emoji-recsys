@@ -8,7 +8,10 @@
  * the result to src/data/emoji-vectors.json.
  */
 
-import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
+import {
+  pipeline,
+  type FeatureExtractionPipeline,
+} from "@huggingface/transformers";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -76,7 +79,9 @@ async function main() {
       const [emoji, data] = batch[j];
       const dims = outputs.dims[outputs.dims.length - 1];
       const start = j * dims;
-      const vec = Array.from(outputs.data.slice(start, start + dims) as Float32Array);
+      const vec = Array.from(
+        outputs.data.slice(start, start + dims) as Float32Array,
+      );
       emojis[emoji] = {
         name: data.name,
         vector: truncate(vec),
@@ -99,7 +104,9 @@ async function main() {
   writeFileSync(OUTPUT, JSON.stringify(result));
 
   const sizeMB = (Buffer.byteLength(JSON.stringify(result)) / 1e6).toFixed(1);
-  console.log(`Done! Wrote ${Object.keys(emojis).length} emojis (${sizeMB}MB) to ${OUTPUT}`);
+  console.log(
+    `Done! Wrote ${Object.keys(emojis).length} emojis (${sizeMB}MB) to ${OUTPUT}`,
+  );
 }
 
 main().catch(console.error);

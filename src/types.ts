@@ -3,11 +3,3 @@ export interface EmojiResult {
   name: string;
   score: number;
 }
-
-export type SkinTone =
-  | "default"
-  | "light"
-  | "medium-light"
-  | "medium"
-  | "medium-dark"
-  | "dark";

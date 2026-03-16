@@ -6,4 +6,4 @@ export {
 
 export { preloadModel, getAllEmojis } from "./engine";
 
-export type { EmojiResult, SkinTone } from "./types";
+export type { EmojiResult } from "./types";

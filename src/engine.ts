@@ -1,4 +1,7 @@
-import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
+import {
+  pipeline,
+  type FeatureExtractionPipeline,
+} from "@huggingface/transformers";
 import type { EmojiResult } from "./types";
 
 interface VectorData {
@@ -64,7 +67,9 @@ export function rankEmojis(
     ? subset
         .map((e) => {
           const data = emojiVectors.emojis[e];
-          return data ? ([e, data] as [string, { name: string; vector: number[] }]) : null;
+          return data
+            ? ([e, data] as [string, { name: string; vector: number[] }])
+            : null;
         })
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : allEmojis;
