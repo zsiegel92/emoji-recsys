@@ -10,19 +10,22 @@ import type { EmojiResult } from "./types";
 export function useEmojiRecommendations(
   query: string,
   n: number = 5,
-): { results: EmojiResult[]; error: Error | null } {
+): { results: EmojiResult[]; loading: boolean; error: Error | null } {
   const [results, setResults] = useState<EmojiResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!query.trim()) {
       setResults([]);
+      setLoading(false);
       setError(null);
       return;
     }
 
     let cancelled = false;
+    setLoading(true);
 
     embedQuery(query)
       .then((queryVec) => rankEmojis(queryVec, n))
@@ -30,11 +33,13 @@ export function useEmojiRecommendations(
         if (!cancelled) {
           setResults(ranked);
           setError(null);
+          setLoading(false);
         }
       })
       .catch((err) => {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
         }
       });
 
@@ -43,7 +48,7 @@ export function useEmojiRecommendations(
     };
   }, [query, n]);
 
-  return { results, error };
+  return { results, loading, error };
 }
 
 /**
@@ -51,9 +56,9 @@ export function useEmojiRecommendations(
  */
 export function useEmojiRecommendation(
   query: string,
-): { result: EmojiResult | null; error: Error | null } {
-  const { results, error } = useEmojiRecommendations(query, 1);
-  return { result: results[0] ?? null, error };
+): { result: EmojiResult | null; loading: boolean; error: Error | null } {
+  const { results, loading, error } = useEmojiRecommendations(query, 1);
+  return { result: results[0] ?? null, loading, error };
 }
 
 /**
@@ -63,19 +68,22 @@ export function useCustomSubsetEmojiRecommendations(
   query: string,
   n: number,
   vocabulary: string[],
-): { results: EmojiResult[]; error: Error | null } {
+): { results: EmojiResult[]; loading: boolean; error: Error | null } {
   const [results, setResults] = useState<EmojiResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!query.trim()) {
       setResults([]);
+      setLoading(false);
       setError(null);
       return;
     }
 
     let cancelled = false;
+    setLoading(true);
 
     embedQuery(query)
       .then((queryVec) => rankEmojis(queryVec, n, vocabulary))
@@ -83,11 +91,13 @@ export function useCustomSubsetEmojiRecommendations(
         if (!cancelled) {
           setResults(ranked);
           setError(null);
+          setLoading(false);
         }
       })
       .catch((err) => {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
         }
       });
 
@@ -96,5 +106,5 @@ export function useCustomSubsetEmojiRecommendations(
     };
   }, [query, n, vocabulary]);
 
-  return { results, error };
+  return { results, loading, error };
 }

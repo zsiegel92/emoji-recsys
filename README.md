@@ -26,9 +26,10 @@ React 18+ is a peer dependency.
 import { useEmojiRecommendations } from "emoji-recsys";
 
 function EmojiPicker() {
-  const { results, error } = useEmojiRecommendations("happy celebration", 5);
+  const { results, loading, error } = useEmojiRecommendations("happy celebration", 5);
 
   if (error) return <div>Failed to load: {error.message}</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
@@ -44,22 +45,22 @@ function EmojiPicker() {
 
 ### Hooks
 
-All hooks return `{ results, error }` (or `{ result, error }` for the singular variant). `error` is `null` on success, or an `Error` if the model fails to load.
+All hooks return `{ results, loading, error }` (or `{ result, loading, error }` for the singular variant). `loading` is `true` while a query is in progress. `error` is `null` on success, or an `Error` if the model fails to load.
 
-#### `useEmojiRecommendations(query: string, n?: number): { results: EmojiResult[]; error: Error | null }`
+#### `useEmojiRecommendations(query: string, n?: number): { results: EmojiResult[]; loading: boolean; error: Error | null }`
 
 Returns the top `n` emojis (default 5) most semantically similar to `query`. Returns `[]` while loading or if query is empty.
 
-#### `useEmojiRecommendation(query: string): { result: EmojiResult | null; error: Error | null }`
+#### `useEmojiRecommendation(query: string): { result: EmojiResult | null; loading: boolean; error: Error | null }`
 
 Returns the single best emoji match.
 
-#### `useCustomSubsetEmojiRecommendations(query: string, n: number, vocabulary: string[]): { results: EmojiResult[]; error: Error | null }`
+#### `useCustomSubsetEmojiRecommendations(query: string, n: number, vocabulary: string[]): { results: EmojiResult[]; loading: boolean; error: Error | null }`
 
 Same as `useEmojiRecommendations`, but only searches within the provided emoji subset.
 
 ```tsx
-const { results } = useCustomSubsetEmojiRecommendations("weather", 3, ["☀️", "🌧️", "❄️", "🌈", "⛈️"]);
+const { results, loading } = useCustomSubsetEmojiRecommendations("weather", 3, ["☀️", "🌧️", "❄️", "🌈", "⛈️"]);
 ```
 
 ### Utilities
